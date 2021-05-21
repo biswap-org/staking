@@ -1,22 +1,33 @@
-const TokenA = artifacts.require("CakeToken");
-const TokenB = artifacts.require("CakeToken2");
-const WBNB = artifacts.require("WBNB");
+// const TokenA = artifacts.require("CakeToken");
+// const TokenB = artifacts.require("CakeToken2");
+// const WBNB = artifacts.require("WBNB");
 const MastefChef = artifacts.require('MasterChef');
 
-const Uni = artifacts.require("Uni");
-const Uni2 = artifacts.require("Uni2");
+// const Uni = artifacts.require("Uni");
+// const Uni2 = artifacts.require("Uni2");
 
-const { MaxUint256 } = require("@ethersproject/constants");
-const { BigNumber }  = require('@ethersproject/bignumber');
-const JSBI           = require('jsbi')
+// const { MaxUint256 } = require("@ethersproject/constants");
+// const { BigNumber }  = require('@ethersproject/bignumber');
+// const JSBI           = require('jsbi')
 module.exports = async function(deployer) {
   let address = deployer.networks.development.from;
 
 
-  await deployer.deploy(MastefChef);
+  await deployer.deploy(MastefChef, 
+    "0x6b5c8ed60f10946662565e76e421c5fa7330260e",
+    "0xdBE55A0daDc80EF88e884f15CE41c26c0Af933a0",
+    "0xdBE55A0daDc80EF88e884f15CE41c26c0Af933a0",
+    "30000000000000000000",
+    "8626338",
+    "8626338",
+    '857000',
+    '100000',
+    '43000'
+);
 
   const instanceMasterChef = await MastefChef.deployed();
-  console.log(instanceMasterChef);
+
+  //console.log(await instanceMasterChef.add(1000, '', true));
 
   // await deployer.deploy(TokenA);
   // await deployer.deploy(TokenB);

@@ -1,0 +1,71 @@
+{
+	"compiler": {
+		"version": "0.6.12+commit.27d51765"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "contract IBEP20",
+						"name": "token",
+						"type": "address"
+					}
+				],
+				"name": "migrate",
+				"outputs": [
+					{
+						"internalType": "contract IBEP20",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"staking/contracts/MasterChef.sol": "IMigratorChef"
+		},
+		"evmVersion": "istanbul",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": true,
+			"runs": 999999
+		},
+		"remappings": []
+	},
+	"sources": {
+		"staking/contracts/BSWToken.sol": {
+			"keccak256": "0x6f964c533de89395dc9329f3a2c04567156ad6ef541d0ae523b15f863fea45a2",
+			"urls": [
+				"bzz-raw://95e34a5e3158b1fce5e3c8f29aef04030971d9f04d3317c63487255d3d994dbe",
+				"dweb:/ipfs/QmarqnghormvHDmSJxWLui7yiw7uVDF99kX5Xh3PmJCWpz"
+			]
+		},
+		"staking/contracts/MasterChef.sol": {
+			"keccak256": "0xf9a98d2ff01f1fe1c3e56d8274dd88eff91de49509acd21176537cf4db70d387",
+			"urls": [
+				"bzz-raw://3f222122e7121e2bc5c534849c3494c26b7828e599a89c9a9c31919d75a083ff",
+				"dweb:/ipfs/QmU1vauYvpimsFhhttw7F4HCKPgaVgFwSTinzMA3F3Z1Qp"
+			]
+		}
+	},
+	"version": 1
+}

@@ -5,8 +5,6 @@ import '@biswap/biswap-core-libs/contracts/token/BEP20/IBEP20.sol';
 import '@biswap/biswap-core-libs/contracts/token/BEP20/SafeBEP20.sol';
 import '@biswap/biswap-core-libs/contracts/access/Ownable.sol';
 
-import "@nomiclabs/buidler/console.sol";
-
 contract SmartChef is Ownable {
     using SafeMath for uint256;
     using SafeBEP20 for IBEP20;
@@ -181,7 +179,6 @@ contract SmartChef is Ownable {
         updatePool(0);
         uint256 pending = user.amount.mul(pool.accBSWPerShare).div(1e12).sub(user.rewardDebt);
         if(pending > 0) {
-            console.log(pending);
             rewardToken.safeTransfer(address(msg.sender), pending);
         }
         if(_amount > 0) {
