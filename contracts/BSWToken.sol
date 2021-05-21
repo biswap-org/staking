@@ -78,6 +78,10 @@ interface IBEP20 {
      */
     function totalSupply() external view returns (uint256);
 
+    function preMineSupply() external view returns (uint256);
+
+    function maxSupply() external view returns (uint256);
+
     /**
      * @dev Returns the token decimals.
      */
@@ -494,8 +498,8 @@ library Address {
 }
 
 contract BEP20 is Context, IBEP20, Ownable {
-    uint256 private constant preMineSupply = 10000000 * 1e18;
-    uint256 private constant maxSupply = 700000000 * 1e18; 
+    uint256 private constant _preMineSupply = 10000000 * 1e18;
+    uint256 private constant _maxSupply = 700000000 * 1e18; 
 
     using SafeMath for uint256;
     using Address for address;
@@ -524,7 +528,7 @@ contract BEP20 is Context, IBEP20, Ownable {
         _symbol = symbol;
         _decimals = 18;
 
-        _mint(msg.sender, preMineSupply);
+        _mint(msg.sender, _preMineSupply);
     }
 
     /**
@@ -563,11 +567,11 @@ contract BEP20 is Context, IBEP20, Ownable {
     }
 
     function preMineSupply() public override view returns (uint256) {
-        return preMineSupply;
+        return _preMineSupply;
     }
 
     function maxSupply() public override view returns (uint256) {
-        return maxSupply;
+        return _maxSupply;
     }
 
     /**
@@ -726,7 +730,7 @@ contract BEP20 is Context, IBEP20, Ownable {
      */
     function _mint(address account, uint256 amount) internal returns(bool) {
         require(account != address(0), 'BEP20: mint to the zero address');
-        if (amount.add(_totalSupply) > maxSupply) {
+        if (amount.add(_totalSupply) > _maxSupply) {
             return false;
         }
 
