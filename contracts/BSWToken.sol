@@ -494,8 +494,8 @@ library Address {
 }
 
 contract BEP20 is Context, IBEP20, Ownable {
-    uint256 private constant preMineSupply = 10000000 * 1e18;
-    uint256 private constant maxSupply = 700000000 * 1e18; 
+    uint256 constant preMineSupply = 10000000 * 1e18;
+    uint256 constant maxSupply = 700000000 * 1e18; 
 
     using SafeMath for uint256;
     using Address for address;
