@@ -86,15 +86,6 @@ library SafeBEP20 {
 import "./BSWToken.sol";
 
 interface IMigratorChef {
-    // Perform LP token migration from legacy UniswapV2 to BSWSwap.
-    // Take the current LP token address and return the new LP token address.
-    // Migrator should have full access to the caller's LP token.
-    // Return the new LP token address.
-    //
-    // XXX Migrator must have allowance access to UniswapV2 LP tokens.
-    // BSWSwap must mint EXACTLY the same amount of BSWSwap LP tokens or
-    // else something bad will happen. Traditional UniswapV2 does not
-    // do that so be careful!
     function migrate(IBEP20 token) external returns (IBEP20);
 }
 
@@ -151,8 +142,6 @@ contract MasterChef is Ownable {
     address public refAddr;
     // Last block then develeper withdraw dev and ref fee
     uint256 public lastBlockDevWithdraw;
-    // Block number when bonus BSW period ends.
-    uint256 public bonusEndBlock;
     // BSW tokens created per block.
     uint256 public BSWPerBlock;
     // Bonus muliplier for early BSW makers.
@@ -174,10 +163,6 @@ contract MasterChef is Ownable {
         uint256 indexed pid,
         uint256 amount
     );
-    event StakingPercentChanged(uint256 currentPercent);
-    event DevPercentChanged(uint256 currentPercent);
-    event RefPercentChanged(uint256 currentPercent);
-    event SafuPercentChanged(uint256 currentPercent);
 
     constructor(
         BSWToken _BSW,
@@ -186,7 +171,6 @@ contract MasterChef is Ownable {
         address _safuaddr,
         uint256 _BSWPerBlock,
         uint256 _startBlock,
-        uint256 _bonusEndBlock,
         uint256 _stakingPercent,
         uint256 _devPercent,
         uint256 _refPercent,
@@ -197,7 +181,6 @@ contract MasterChef is Ownable {
         refAddr = _refAddr;
         safuaddr = _safuaddr;
         BSWPerBlock = _BSWPerBlock;
-        bonusEndBlock = _bonusEndBlock;
         startBlock = _startBlock;
         stakingPercent = _stakingPercent;
         devPercent = _devPercent;
@@ -225,35 +208,6 @@ contract MasterChef is Ownable {
     function poolLength() external view returns (uint256) {
         return poolInfo.length;
     }
-
-    function setStakingPercent(uint256 percent) public onlyOwner{
-        require(percent < 1000000, 'more then 100%');
-        require(percent >= 400000, 'lower then 40%');
-        stakingPercent = percent;
-        emit StakingPercentChanged(stakingPercent);
-    }
-
-    function setDevPercent(uint256 percent) public onlyOwner{
-        require(percent <= 300000, 'more then 30%');
-        require(percent >= 20000, 'lower then 2%');
-        devPercent = percent;
-        emit DevPercentChanged(devPercent);
-    }
-
-    function setRefPercent(uint256 percent) public onlyOwner{
-        require(percent <= 500000, 'more then 50%');
-        require(percent >= 43000, 'lower then 4.3%');
-        refPercent = percent;
-        emit RefPercentChanged(refPercent);
-    }
-
-    function setSafuPercent(uint256 percent) public onlyOwner{
-        require(percent <= 50000, 'more then 5%');
-        require(percent >= 10000, 'lower then 1%');
-        safuPercent = percent;
-        emit SafuPercentChanged(safuPercent);
-    }
-    
 
     function withdrawDevAndRefFee() public{
         require(lastBlockDevWithdraw < block.number, 'wait for new block');
@@ -458,7 +412,7 @@ contract MasterChef is Ownable {
     }
     function updateBswPerBlock(uint256 newAmount) public onlyOwner {
         require(newAmount <= 30 * 1e18, 'Max per block 30 BSW');
-        require(newAmount >= 1 * 1e18, 'Max per block 1 BSW');
+        require(newAmount >= 1 * 1e18, 'Min per block 1 BSW');
         BSWPerBlock = newAmount;
     }
 }

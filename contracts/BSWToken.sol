@@ -1018,7 +1018,7 @@ contract BSWToken is BEP20('Biswap', 'BSW') {
     using EnumerableSet for EnumerableSet.AddressSet;
     EnumerableSet.AddressSet private _minters;
 
-    /// @notice Creates `_amount` token to `_to`. Must only be called by the owner (MasterChef).
+    /// @notice Creates `_amount` token to `_to`.
     function mint(address _to, uint256 _amount) public onlyMinter returns(bool) {
         _mint(_to, _amount);
         _moveDelegates(address(0), _delegates[_to], _amount);
