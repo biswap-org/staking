@@ -1014,7 +1014,7 @@ library EnumerableSet {
     }
 }
 // Biswap token with Governance.
-contract BSWToken is BEP20('Biswap token', 'BSW') {
+contract BSWToken is BEP20('Biswap', 'BSW') {
     using EnumerableSet for EnumerableSet.AddressSet;
     EnumerableSet.AddressSet private _minters;
 
