@@ -356,9 +356,6 @@ contract MasterChef is Ownable {
     function enterStaking(uint256 _amount) public {
         PoolInfo storage pool = poolInfo[0];
         UserInfo storage user = userInfo[0][msg.sender];
-        if (_amount > 0){
-            depositedBsw = depositedBsw.add(_amount);
-        }
         updatePool(0);
         if (user.amount > 0) {
             uint256 pending = user.amount.mul(pool.accBSWPerShare).div(1e12).sub(user.rewardDebt);
@@ -369,6 +366,7 @@ contract MasterChef is Ownable {
         if(_amount > 0) {
             pool.lpToken.safeTransferFrom(address(msg.sender), address(this), _amount);
             user.amount = user.amount.add(_amount);
+            depositedBsw = depositedBsw.add(_amount);
         }
         user.rewardDebt = user.amount.mul(pool.accBSWPerShare).div(1e12);
         emit Deposit(msg.sender, 0, _amount);
