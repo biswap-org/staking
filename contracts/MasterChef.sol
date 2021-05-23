@@ -277,6 +277,9 @@ contract MasterChef is Ownable {
         UserInfo storage user = userInfo[_pid][_user];
         uint256 accBSWPerShare = pool.accBSWPerShare;
         uint256 lpSupply = pool.lpToken.balanceOf(address(this));
+        if (_pid == 0){
+            lpSupply = depositedBsw;
+        }
         if (block.number > pool.lastRewardBlock && lpSupply != 0) {
             uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
             uint256 BSWReward = multiplier.mul(BSWPerBlock).mul(pool.allocPoint).div(totalAllocPoint).mul(stakingPercent).div(percentDec);
@@ -301,7 +304,7 @@ contract MasterChef is Ownable {
         }
         uint256 lpSupply = pool.lpToken.balanceOf(address(this));
         if (_pid == 0){
-            lpSupply = lpSupply.sub(depositedBsw);
+            lpSupply = depositedBsw;
         }
         if (lpSupply <= 0) {
             pool.lastRewardBlock = block.number;
