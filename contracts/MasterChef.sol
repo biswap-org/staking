@@ -156,6 +156,9 @@ contract MasterChef is Ownable {
     uint256 public totalAllocPoint = 0;
     // The block number when BSW mining starts.
     uint256 public startBlock;
+    // Deposited amount BSW in MasterChef
+    uint256 public depositedBsw;
+
     event Deposit(address indexed user, uint256 indexed pid, uint256 amount);
     event Withdraw(address indexed user, uint256 indexed pid, uint256 amount);
     event EmergencyWithdraw(
@@ -297,7 +300,10 @@ contract MasterChef is Ownable {
             return;
         }
         uint256 lpSupply = pool.lpToken.balanceOf(address(this));
-        if (lpSupply == 0) {
+        if (_pid == 0){
+            lpSupply = lpSupply.sub(depositedBsw);
+        }
+        if (lpSupply <= 0) {
             pool.lastRewardBlock = block.number;
             return;
         }
@@ -347,6 +353,9 @@ contract MasterChef is Ownable {
     function enterStaking(uint256 _amount) public {
         PoolInfo storage pool = poolInfo[0];
         UserInfo storage user = userInfo[0][msg.sender];
+        if (_amount > 0){
+            depositedBsw = depositedBsw.add(_amount);
+        }
         updatePool(0);
         if (user.amount > 0) {
             uint256 pending = user.amount.mul(pool.accBSWPerShare).div(1e12).sub(user.rewardDebt);
@@ -375,6 +384,7 @@ contract MasterChef is Ownable {
         if(_amount > 0) {
             user.amount = user.amount.sub(_amount);
             pool.lpToken.safeTransfer(address(msg.sender), _amount);
+            depositedBsw = depositedBsw.sub(_amount);
         }
         user.rewardDebt = user.amount.mul(pool.accBSWPerShare).div(1e12);
         emit Withdraw(msg.sender, 0, _amount);
