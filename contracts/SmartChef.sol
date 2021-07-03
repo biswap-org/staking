@@ -633,6 +633,8 @@ contract SmartChef is Ownable {
     uint256 public startBlock;
     // The block number when BSW mining ends.
     uint256 public bonusEndBlock;
+    // limit 100 BSW
+    uint256 public limitAmount = 100000000000000000000;
 
     event Deposit(address indexed user, uint256 amount);
     event Withdraw(address indexed user, uint256 amount);
@@ -660,6 +662,19 @@ contract SmartChef is Ownable {
             accBSWPerShare: 0
         }));
         totalAllocPoint = 1000;
+    }
+
+    // Set the limit amount.
+    function setLimitAmount(uint256 _amount) public onlyOwner {
+        limitAmount = _amount;
+    }
+
+    // Return remaining limit amount
+    function remainingLimitAmount() public view returns(uint256) {
+        if (userInfo[msg.sender].amount >= limitAmount){
+            return 0;
+        }
+        return limitAmount.sub(userInfo[msg.sender].amount);
     }
 
     // Return reward multiplier over the given _from to _to block.
@@ -717,6 +732,9 @@ contract SmartChef is Ownable {
     function deposit(uint256 _amount) public {
         PoolInfo storage pool = poolInfo[0];
         UserInfo storage user = userInfo[msg.sender];
+
+        require(user.amount.add(_amount) <= limitAmount, 'Exceed limit amount');
+
         updatePool(0);
         if (user.amount > 0) {
             uint256 pending = user.amount.mul(pool.accBSWPerShare).div(1e12).sub(user.rewardDebt);
