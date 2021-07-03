@@ -634,7 +634,7 @@ contract SmartChef is Ownable {
     // The block number when BSW mining ends.
     uint256 public bonusEndBlock;
     // limit 100 BSW
-    uint256 public limitAmount = 100000000000000000000;
+    uint256 public limitAmount = 200000000000000000000;
 
     event Deposit(address indexed user, uint256 amount);
     event Withdraw(address indexed user, uint256 amount);
