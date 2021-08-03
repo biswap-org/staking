@@ -613,7 +613,7 @@ contract SmartChef is Ownable {
         IBEP20 lpToken;           // Address of LP token contract.
         uint256 allocPoint;       // How many allocation points assigned to this pool. BSWs to distribute per block.
         uint256 lastRewardBlock;  // Last block number that BSWs distribution occurs.
-        uint256 accBSWPerShare;   // Accumulated BSWs per share, times 1e12. See below.
+        uint256 accBSWPerShare;   // Accumulated BSWs per share, times PRECISION_FACTOR. See below.
     }
 
     // The BSW TOKEN!
@@ -634,7 +634,10 @@ contract SmartChef is Ownable {
     // The block number when BSW mining ends.
     uint256 public bonusEndBlock;
     // limit 100 BSW
-    uint256 public limitAmount = 200000000000000000000;
+    uint256 public limitAmount = 100000000000000000000;
+
+    // The precision factor
+    uint256 public PRECISION_FACTOR;
 
     event Deposit(address indexed user, uint256 amount);
     event Withdraw(address indexed user, uint256 amount);
@@ -653,6 +656,12 @@ contract SmartChef is Ownable {
         rewardPerBlock = _rewardPerBlock;
         startBlock = _startBlock;
         bonusEndBlock = _bonusEndBlock;
+
+
+        uint256 decimalsRewardToken = uint256(rewardToken.decimals());
+        require(decimalsRewardToken < 30, "Must be inferior to 30");
+
+        PRECISION_FACTOR = uint256(10**(uint256(30).sub(decimalsRewardToken)));
 
         // staking pool
         poolInfo.push(PoolInfo({
@@ -697,9 +706,9 @@ contract SmartChef is Ownable {
         if (block.number > pool.lastRewardBlock && lpSupply != 0) {
             uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
             uint256 BSWReward = multiplier.mul(rewardPerBlock).mul(pool.allocPoint).div(totalAllocPoint);
-            accBSWPerShare = accBSWPerShare.add(BSWReward.mul(1e12).div(lpSupply));
+            accBSWPerShare = accBSWPerShare.add(BSWReward.mul(PRECISION_FACTOR).div(lpSupply));
         }
-        return user.amount.mul(accBSWPerShare).div(1e12).sub(user.rewardDebt);
+        return user.amount.mul(accBSWPerShare).div(PRECISION_FACTOR).sub(user.rewardDebt);
     }
 
     // Update reward variables of the given pool to be up-to-date.
@@ -715,7 +724,7 @@ contract SmartChef is Ownable {
         }
         uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
         uint256 BSWReward = multiplier.mul(rewardPerBlock).mul(pool.allocPoint).div(totalAllocPoint);
-        pool.accBSWPerShare = pool.accBSWPerShare.add(BSWReward.mul(1e12).div(lpSupply));
+        pool.accBSWPerShare = pool.accBSWPerShare.add(BSWReward.mul(PRECISION_FACTOR).div(lpSupply));
         pool.lastRewardBlock = block.number;
     }
 
@@ -737,7 +746,7 @@ contract SmartChef is Ownable {
 
         updatePool(0);
         if (user.amount > 0) {
-            uint256 pending = user.amount.mul(pool.accBSWPerShare).div(1e12).sub(user.rewardDebt);
+            uint256 pending = user.amount.mul(pool.accBSWPerShare).div(PRECISION_FACTOR).sub(user.rewardDebt);
             if(pending > 0) {
                 rewardToken.safeTransfer(address(msg.sender), pending);
             }
@@ -746,7 +755,8 @@ contract SmartChef is Ownable {
             pool.lpToken.safeTransferFrom(address(msg.sender), address(this), _amount);
             user.amount = user.amount.add(_amount);
         }
-        user.rewardDebt = user.amount.mul(pool.accBSWPerShare).div(1e12);
+        user.rewardDebt = user.amount.mul(pool.accBSWPerShare).div(PRECISION_FACTOR);
+
 
         emit Deposit(msg.sender, _amount);
     }
@@ -757,7 +767,7 @@ contract SmartChef is Ownable {
         UserInfo storage user = userInfo[msg.sender];
         require(user.amount >= _amount, "withdraw: not good");
         updatePool(0);
-        uint256 pending = user.amount.mul(pool.accBSWPerShare).div(1e12).sub(user.rewardDebt);
+        uint256 pending = user.amount.mul(pool.accBSWPerShare).div(PRECISION_FACTOR).sub(user.rewardDebt);
         if(pending > 0) {
             rewardToken.safeTransfer(address(msg.sender), pending);
         }
@@ -765,7 +775,7 @@ contract SmartChef is Ownable {
             user.amount = user.amount.sub(_amount);
             pool.lpToken.safeTransfer(address(msg.sender), _amount);
         }
-        user.rewardDebt = user.amount.mul(pool.accBSWPerShare).div(1e12);
+        user.rewardDebt = user.amount.mul(pool.accBSWPerShare).div(PRECISION_FACTOR);
 
         emit Withdraw(msg.sender, _amount);
     }
