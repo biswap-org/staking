@@ -19,9 +19,6 @@ contract('MasterChef', ([devAddr, refFeeAddr, safuAddr, investorAddr, minter, te
         assert.equal(await this.investor.refaddr.call(), test);
         assert.equal(await this.investor.safuaddr.call(), test);
 
-    });
-
-    it('change addresses to normal', async () => {
         await this.investor.setNewAddresses(investorAddr, devAddr, refFeeAddr, safuAddr, { from: minter });
 
         assert.equal(await this.investor.investoraddr.call(), investorAddr);
@@ -29,47 +26,29 @@ contract('MasterChef', ([devAddr, refFeeAddr, safuAddr, investorAddr, minter, te
         assert.equal(await this.investor.refaddr.call(), refFeeAddr);
         assert.equal(await this.investor.safuaddr.call(), safuAddr);
 
-    });
-
-    it('bsw per block to test', async () => {
-        await this.investor.updateBswPerBlock('10', { from: minter });
-        assert.equal(await this.investor.BSWPerBlock.call(), '10');
-    });
-
-    it('bsw per block to normal', async () => {
         await this.investor.updateBswPerBlock('1633604000000000000', { from: minter });
         assert.equal(await this.investor.BSWPerBlock.call(), '1633604000000000000');
-    });
 
-    it('percents to test', async () => {
-        await this.investor.changePercents('1', '1', '1', '1', { from: minter });
+        await this.investor.updateBswPerBlock('1633604000000000000', { from: minter });
+        assert.equal(await this.investor.BSWPerBlock.call(), '1633604000000000000');
 
-        assert.equal(await this.investor.investorPercent.call(), '1');
-        assert.equal(await this.investor.devPercent.call(), '1');
-        assert.equal(await this.investor.refPercent.call(), '1');
-        assert.equal(await this.investor.safuPercent.call(), '1');
-    });
+        await this.investor.changePercents('100000', '100000', '100000', '700000', { from: minter });
 
-    it('percents to normal', async () => {
+        assert.equal(await this.investor.investorPercent.call(), '100000');
+        assert.equal(await this.investor.devPercent.call(), '100000');
+        assert.equal(await this.investor.refPercent.call(), '100000');
+        assert.equal(await this.investor.safuPercent.call(), '700000');
+
         await this.investor.changePercents('857000', '90000', '43000', '10000', { from: minter });
 
         assert.equal(await this.investor.investorPercent.call(), '857000');
         assert.equal(await this.investor.devPercent.call(), '90000');
         assert.equal(await this.investor.refPercent.call(), '43000');
         assert.equal(await this.investor.safuPercent.call(), '10000');
-    });
 
-    it('block to test', async () => {
-        await this.investor.updateLastWithdrawBlock('10', { from: minter });
-        assert.equal(await this.investor.lastBlockWithdraw.call(), '10');
-    });
+        await this.investor.updateLastWithdrawBlock('20', { from: minter });
+        assert.equal(await this.investor.lastBlockWithdraw.call(), '20');
 
-    it('block to normal', async () => {
-        await this.investor.updateLastWithdrawBlock('0', { from: minter });
-        assert.equal(await this.investor.lastBlockWithdraw.call(), '0');
-    });
-
-    it('real case', async () => {
         await time.advanceBlockTo('99');
 
         await this.investor.withdraw({ from: minter });

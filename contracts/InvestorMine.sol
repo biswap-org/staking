@@ -117,6 +117,11 @@ contract InvestorMine is Ownable {
     // BSW tokens created per block.
     uint256 public BSWPerBlock;
 
+    event updatedLastBlock(uint256 _blockNumber);
+    event updatedBswPerBlock(uint256 _amount);
+    event updatedPercents(uint256 _investor, uint256 _dev, uint256 _ref, uint256 _safu);
+    event updatedAddresses(address _investoraddr, address _devaddr, address _refaddr, address _safuaddr);
+
     constructor(
         BSWToken _BSW,
         address _devaddr,
@@ -141,7 +146,7 @@ contract InvestorMine is Ownable {
     }
 
     // Return reward multiplier over the given _from to _to block.
-    function getMultiplier(uint256 _from, uint256 _to) public view returns (uint256) {
+    function getMultiplier(uint256 _from, uint256 _to) public pure returns (uint256) {
         return _to.sub(_from);
     }
 
@@ -156,36 +161,39 @@ contract InvestorMine is Ownable {
         lastBlockWithdraw = block.number;
     }
 
-    // Safe BSW transfer function, just in case if rounding error causes pool to not have enough BSWs.
-    function safeBSWTransfer(address _to, uint256 _amount) internal {
-        uint256 BSWBal = BSW.balanceOf(address(this));
-        if (_amount > BSWBal) {
-            BSW.transfer(_to, BSWBal);
-        } else {
-            BSW.transfer(_to, _amount);
-        }
-    }
-
     function setNewAddresses(address _investoraddr, address _devaddr, address _refaddr, address _safuaddr) public onlyOwner {
+        require(_investoraddr  != address(0), 'investor addr cant be zero');
+        require(_devaddr  != address(0), 'dev addr cant be zero');
+        require(_refaddr  != address(0), 'ref addr cant be zero');
+        require(_safuaddr  != address(0), 'safu addr cant be zero');
+
         investoraddr = _investoraddr;
         devaddr = _devaddr;
         refaddr = _refaddr;
         safuaddr = _safuaddr;
+
+        emit updatedAddresses(_investoraddr, _devaddr, _refaddr, _safuaddr);
     }
 
     function changePercents(uint256 _investor, uint256 _dev, uint256 _ref, uint256 _safu) public onlyOwner{
+        require(_investor.add(_dev).add(_ref).add(_safu) == percentDec, 'check percents');
         investorPercent = _investor;
         devPercent = _dev;
         refPercent = _ref;
         safuPercent = _safu;
+        emit updatedPercents(_investor, _dev, _ref, _safu);
     }
 
     function updateBswPerBlock(uint256 newAmount) public onlyOwner {
         require(newAmount <= 10 * 1e18, 'Max per block 10 BSW');
+        withdraw();
         BSWPerBlock = newAmount;
+        emit updatedBswPerBlock(newAmount);
     }
 
     function updateLastWithdrawBlock(uint256 _blockNumber) public onlyOwner {
+        withdraw();
         lastBlockWithdraw = _blockNumber;
+        emit updatedLastBlock(_blockNumber);
     }
 }
