@@ -46,8 +46,8 @@ contract('MasterChef', ([devAddr, refFeeAddr, safuAddr, investorAddr, minter, te
         assert.equal(await this.investor.refPercent.call(), '43000');
         assert.equal(await this.investor.safuPercent.call(), '10000');
 
-        await this.investor.updateLastWithdrawBlock('20', { from: minter });
-        assert.equal(await this.investor.lastBlockWithdraw.call(), '20');
+        await this.investor.updateLastWithdrawBlock('8', { from: minter });
+        assert.equal(await this.investor.lastBlockWithdraw.call(), '8');
 
         await time.advanceBlockTo('99');
 
