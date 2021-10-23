@@ -192,7 +192,7 @@ contract InvestorMine is Ownable {
     }
 
     function updateLastWithdrawBlock(uint256 _blockNumber) public onlyOwner {
-        withdraw();
+        require(_blockNumber > lastBlockWithdraw, 'new block number must be greater then last block');
         lastBlockWithdraw = _blockNumber;
         emit updatedLastBlock(_blockNumber);
     }
