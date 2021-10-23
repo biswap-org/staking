@@ -162,10 +162,10 @@ contract InvestorMine is Ownable {
     }
 
     function setNewAddresses(address _investoraddr, address _devaddr, address _refaddr, address _safuaddr) public onlyOwner {
-        require(_investoraddr  != address(0), 'investor addr cant be zero');
-        require(_devaddr  != address(0), 'dev addr cant be zero');
-        require(_refaddr  != address(0), 'ref addr cant be zero');
-        require(_safuaddr  != address(0), 'safu addr cant be zero');
+        require(_investoraddr != address(0), 'investor addr cant be zero');
+        require(_devaddr != address(0), 'dev addr cant be zero');
+        require(_refaddr != address(0), 'ref addr cant be zero');
+        require(_safuaddr != address(0), 'safu addr cant be zero');
 
         investoraddr = _investoraddr;
         devaddr = _devaddr;
