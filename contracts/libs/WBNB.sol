@@ -23,7 +23,8 @@ contract WBNB {
     function withdraw(uint wad) public {
         require(balanceOf[msg.sender] >= wad);
         balanceOf[msg.sender] -= wad;
-        msg.sender.transfer(wad);
+        (bool sent, bytes memory data) = msg.sender.call{value: wad}(""); // recommend this function to send eth
+        require(sent, "Failed to send Ether");
         emit Withdrawal(msg.sender, wad);
     }
 
